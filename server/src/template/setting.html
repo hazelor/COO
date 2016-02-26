@@ -1,0 +1,33 @@
+{%extends "base.html" %}
+{% block metadata%}
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/settingapp.css">
+<script src="/static/js/settingapp.js"></script>
+
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/custom-theme/jquery-ui-1.9.2.custom.css">
+<script src="/static/js/jquery-ui-1.9.2.custom.min.js"></script>
+
+{%end%}
+
+{%block title%}采集设置{%end%}
+
+{%block content%}
+<div class="row content">
+    <div style="margin:15px; padding:15px;">
+        <div class="sideBarMenu col-md-2">
+            <div class="basic mainmenu">
+                <label class="menulabel">采集设置</label><span class="caret" style="margin: 15px;"></span>
+                <a class="submenu" href="/setting/basic">基本设置</a>
+            </div>
+        </div>
+
+        {%if sub_page_name == 'basic'%}
+            {%module basic()%}
+        {%end%}
+    </div>
+</div>
+<div>
+    <div class="LoadingBg"></div>
+    <div class="Loading_message"></div>
+    <div class="LoadingImg"></div>
+</div>
+{%end%}

@@ -1,0 +1,15 @@
+{%extends "base.html" %}
+{% block metadata%}
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/tbapp.css">
+<script src="/static/js/tbapp.js"></script>
+<script src="/static/js/data_show.js"></script>
+<script src="/static/js/chart/highcharts.js"></script>
+<script src="/static/js/chart/modules/exporting.js"></script>
+{%end%}
+{%block title%}采集数据{%end%}
+
+{%block content%}
+    {%for ch in chambers %}
+        {%include chamber.html%}
+    {% end %}
+{%end%}
