@@ -3,7 +3,7 @@ from marcos import *
 
 
 def create_engine(user, password, database, is_auto_commit=False, host='127.0.0.1', port=3306, **kw):
-    params = dict(user=user, password=password, database=database, host=host,port=port)
+    params = dict(user=user, password=password, database=database, host=host, port=port)
     defaults = dict(use_unicode=True, charset='utf8', collation='utf8_general_ci', autocommit=is_auto_commit)
     for k,v in defaults.iteritems():
         params[k]=kw.pop(k,v)

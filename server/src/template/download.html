@@ -41,7 +41,11 @@
                     <div class="input-group">
                         <span class="input-group-addon">下载
                         </span>
-                        <input type="text" id="reboot_btn" class="form-control btn btn-primary" role="button" value="重启" onclick="download_datas()">
+                        <a download='' href='' onclick="javascrit:if(download_data()==false){return false;}" id="download_link">
+                        <!--<a onclick="javascrit:if(download_image()==false){return false;}" id="download_link">-->
+                            <input class="btn btn-primary" value="数据下载">
+                        </a>
+
                     </div><!-- /input-group -->
                 </div><!-- /.col-lg-6 -->
             </div><!-- /.row -->

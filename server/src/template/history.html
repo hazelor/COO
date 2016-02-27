@@ -41,9 +41,9 @@
                     <div class="input-group">
                         <span class="input-group-addon">气室选择
                         </span>
-                        <select class="combobox form-control" id="chamber_name" value="{{current_chamber_name}}">
-                        {%for name in chamber_names%}
-                            <option value="{{name}}">{{name}}</option>
+                        <select class="combobox form-control" id="chamber_name" onchange="chamber_changed()" value="{{current_chamber_key}}">
+                        {%for key, item in chamber_dict.items()%}
+                            <option value="{{key}}">{{item['name']}}</option>
                         {%end%}
                         </select>
                     </div><!-- /input-group -->
@@ -54,7 +54,10 @@
                     <div class="input-group">
                         <span class="input-group-addon">数据选择
                         </span>
-                        <select class="combobox form-control" id="data_name">
+                            <select class="combobox form-control" id="data_name" value="{{current_data_key}}">
+                            {%for key, name in data_dict.items()%}
+                            <option value="{{key}}">{{name}}</option>
+                        {%end%}
                         </select>
                     </div><!-- /input-group -->
                 </div><!-- /.col-lg-6 -->

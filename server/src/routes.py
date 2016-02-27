@@ -7,11 +7,11 @@ handlers = [
     (r'/preview/realtime', preview_realtime_handler),
     (r'/download',download_handler),
     (r'/history',history_handler),
-    (r'/history/query', history_query_handler)
+    (r'/history/query', history_query_handler),
     (r'/setting',setting_handler),
     (r"/setting/(\w+)",setting_handler),
     (r'/api/dataChannel', data_handler),
-    (r'/api/ctrl', ctrl_handler)
+    (r'/api/ctrl', ctrl_handler),
 ]
 
 modules = {
