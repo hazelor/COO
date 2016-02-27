@@ -1,7 +1,7 @@
 {%extends "base.html" %}
 {% block metadata%}
-<link rel="stylesheet" type="text/css" media="screen" href="/static/css/tbapp.css">
-<script src="/static/js/tbapp.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/preview_app.css">
+<script src="/static/js/preview_app.js"></script>
 <script src="/static/js/data_show.js"></script>
 <script src="/static/js/chart/highcharts.js"></script>
 <script src="/static/js/chart/modules/exporting.js"></script>
@@ -9,7 +9,15 @@
 {%block title%}采集数据{%end%}
 
 {%block content%}
-    {%for ch in chambers %}
-        {%include chamber.html%}
-    {% end %}
+    <div class="row">
+        <select class="combobox form-control" id="chamber_name" value="{{current_key}}">
+            {%for ch in chambers%}
+                <option value="{{ch['key']}}">{{ch['name']}}</option>
+            {%end%}
+        </select>
+    </div>
+    <br/>
+    <div class="content">
+        {% include chamber.html %}
+    </div>
 {%end%}

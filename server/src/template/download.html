@@ -1,0 +1,51 @@
+{%extends "base.html" %}
+{% block metadata%}
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/download_app.css">
+<script src="/static/js/download_app.js"></script>
+
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/custom-theme/jquery-ui-1.9.2.custom.css">
+<script src="/static/js/jquery-ui-1.9.2.custom.min.js"></script>
+
+{%end%}
+{%block title%}下载数据{%end%}
+
+{%block content%}
+    <div class="panel panel-default">
+        <div class="panel-heading">时间范围</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="input-group">
+                        <span class="input-group-addon">起始时间
+                        </span>
+                        <input type="text" class="form-control form_datetime" aria-label="..." id="start_time"/>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="input-group">
+                        <span class="input-group-addon">结束时间
+                        </span>
+                        <input type="text" class="form-control form_datetime" aria-label="..." id="end_time"/>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">数据下载</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="input-group">
+                        <span class="input-group-addon">下载
+                        </span>
+                        <input type="text" id="reboot_btn" class="form-control btn btn-primary" role="button" value="重启" onclick="download_datas()">
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div><!-- /.row -->
+            <p></p>
+        </div>
+    </div>
+{%end%}
