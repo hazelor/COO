@@ -1,7 +1,8 @@
 import os
+import redis
 import mysql.connector
 from celery import Celery,platforms
-# import json
+import json
 from util.dbtool import *
 
 
@@ -16,6 +17,7 @@ platforms.C_FORCE_ROOT = True
 
 @celery.task(name='handler.tasks.db_save')
 def db_save(jdatas):
+    r=redis.Redis()
     data_dict={'air_temperature':[],'air_humidity':[],'soil_temperature':[],'soil_humidity':[],'measured_concentration':[],'target_concentration':[]}
     if len(jdatas) != 0:
 	for jdata in jdatas:
@@ -23,7 +25,8 @@ def db_save(jdatas):
 	    date=jdata['date']
 	    position=jdata['position']
     	    for k,v in jdata['data'].iteritems():
-		data_dict[k].append((mac_address, position, v, date))
+		        data_dict[k].append((mac_address, position, v, date))
+                r.hmset(mac_address+','+position+','+k, {'value':value, 'date':date})
     with database_resource() as cursor:
 	cursor.executemany('insert into air_temperature (mac_address, position, value, date) values (%s, %s, %s, %s)', data_dict['air_temperature'])
 	cursor.executemany('insert into air_humidity (mac_address, position, value, date) values (%s, %s, %s, %s)', data_dict['air_humidity'])
@@ -32,6 +35,26 @@ def db_save(jdatas):
 	cursor.executemany('insert into measured_concentration (mac_address, position, value, date) values (%s, %s, %s, %s)', data_dict['measured_concentration'])
 	cursor.executemany('insert into target_concentration (mac_address, position, value, date) values (%s, %s, %s, %s)', data_dict['target_concentration'])
     return 'Y'
+
+@celery.task(name='handler.tasks.db_query')
+def db_query(mac_address, postion, type, start_time, end_time):
+    sql = 'select * from %s where mac_address=%s and postion=%s and date BETWEEN %s and %s' % (type, mac_address, postion, start_time, end_time)
+    # data=[]
+    with database_resource() as cursor:
+        cursor.execute(sql)
+        data = cursor.fetchall()
+    if not data:
+        data = json.dumps(data)
+        return data
+
+@celery.task(name='handler.tasks.redis_query')
+def redis_query(mac_address, postion, type):
+    data={}
+    r=redis.Redis()
+    data['value']=r.hget(mac_address+','+postion+','+type, 'value')
+    data['date']=r.hget(mac_address+','+postion+','+type, 'date')
+    data = json.dumps(data)
+    return data
 
 
 if __name__ == "__main__":

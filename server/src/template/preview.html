@@ -10,7 +10,7 @@
 
 {%block content%}
     <div class="row">
-        <select class="combobox form-control" id="chamber_name" value="{{current_key}}">
+        <select class="combobox form-control" id="chamber_name" value="{{current_key}}" onchange='on_selecteditem_change()'>
             {%for ch in chambers%}
                 <option value="{{ch['key']}}">{{ch['name']}}</option>
             {%end%}
