@@ -7,23 +7,17 @@
                 <div id="container"></div>
             </div>
             <div class="col-lg-4">
-                <table class="table table-bordered table-striped">
-                    <colgroup>
-                        <col class="col-xs-1">
-                        <col class="col-xs-3">
-                    </colgroup>
-                    <thead>
-                    <tr>
-                        <th>项目</th>
-                        <th>信息</th>
-                    </tr>
-                    </thead>
-                    {%for dc in data_contents %}
-                        <tr>
-                            <td class="active">{{dc['name']}}</td>
-                            <td id="{{dc['id']}}"></td>
-                        </tr>
-                    {%end%}
+                <table class="table table-bordered table-striped" id='detail_content'>
+                    <!--<colgroup>-->
+                        <!--<col class="col-xs-1">-->
+                        <!--<col class="col-xs-3">-->
+                    <!--</colgroup>-->
+                    <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th>项目</th>-->
+                        <!--<th>信息</th>-->
+                    <!--</tr>-->
+                    <!--</thead>-->
                 </table>
             </div>
         </div>

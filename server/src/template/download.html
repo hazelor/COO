@@ -2,7 +2,8 @@
 {% block metadata%}
 <link rel="stylesheet" type="text/css" media="screen" href="/static/css/download_app.css">
 <script src="/static/js/download_app.js"></script>
-
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/bootstrap-datetimepicker.min.css">
+<script src="/static/js/bootstrap-datetimepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" media="screen" href="/static/css/custom-theme/jquery-ui-1.9.2.custom.css">
 <script src="/static/js/jquery-ui-1.9.2.custom.min.js"></script>
 
@@ -33,6 +34,9 @@
             </div>
         </div>
     </div>
+    <script>
+        $(".form_datetime").datetimepicker({format:"yyyy-mm-dd hh:ii"})
+    </script>
     <div class="panel panel-default">
         <div class="panel-heading">数据下载</div>
         <div class="panel-body">
@@ -41,7 +45,7 @@
                     <div class="input-group">
                         <span class="input-group-addon">下载
                         </span>
-                        <a download='' href='' onclick="javascrit:if(download_data()==false){return false;}" id="download_link">
+                        <a download='' href='' onclick="javascrit:if(download_datas()==false){return false;}" id="download_link">
                         <!--<a onclick="javascrit:if(download_image()==false){return false;}" id="download_link">-->
                             <input class="btn btn-primary" value="数据下载">
                         </a>

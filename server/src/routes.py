@@ -14,5 +14,5 @@ handlers = [
     (r'/api/ctrl', ctrl_handler),
 ]
 
-modules = {
+modules = {'basic': setting_basicModule,
 }

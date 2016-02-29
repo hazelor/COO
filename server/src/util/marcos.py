@@ -1,5 +1,5 @@
-#about ab
-DB_USER = 'root'
+#about db
+DB_USER = 'sonic513'
 
 DB_USER_PASSWORD = 'sonic513'
 
@@ -7,6 +7,6 @@ DB_NAME = 'carbon_dioxide'
 
 ##-----chamber conf------
 
-CHAMBER_CONF_PATH = "./conf/chambers.conf"
+CHAMBER_CONF_PATH = "conf/chambers.conf"
 
-DOWNLOAD_DIR = "tmp"
+DOWNLOAD_DIR = "static/download"
