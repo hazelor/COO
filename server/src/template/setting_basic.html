@@ -2,7 +2,26 @@
     <div class="panel-heading">基本信息</div>
     <div class="panel-body">
         {%for di in devices_info %}
-            {%include duration.html%}
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="input-group dev_interval">
+                        <span class="input-group-addon" >
+                            {{di[1]}}
+                            <div style="display: none">
+                                {{di[0]}}
+                            </div>
+                        </span>
+                        <select class="combobox form-control duration">
+                            <option value="1">1s</option>
+                            <option value="2">2s</option>
+                            <option value="10">10s</option>
+                            <option value="30">30s</option>
+                            <option value="60">1min</option>
+                            <option value="600">10min</option>
+                         </select>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div><!-- /.row -->
         {% end %}
     </div>
 </div>

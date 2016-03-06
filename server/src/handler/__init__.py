@@ -8,3 +8,4 @@ from handler.history import *
 from handler.home import *
 from handler.preview import *
 from handler.setting import *
+from handler.log import *

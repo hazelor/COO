@@ -5,13 +5,26 @@ import tornado
 import json
 import tcelery
 import tasks
-from util.confs import g_chamber_conf
+# from util.confs import g_chamber_conf
+from util.dbtool import *
+
 
 class preview_handler(base_handler):
-    def get(self, *args, **kwargs):
+    @tornado.web.authenticated
+    @tornado.web.asynchronous
+    def get(self):
+        mac_address_list = (self.current_user).strip().split(',')
+        g_chamber_conf=[]
+        for item in mac_address_list:
+            sql = "select mac_address_position,name from air_chamber where mac_address='%s' " % (item)
+            with database_resource() as cursor:
+                cursor.execute(sql)
+                data = cursor.fetchall()
+            if data:
+                g_chamber_conf += data
         current_key = self.get_argument('current_key','')
         if current_key == '':
-            current_key = g_chamber_conf.keys()[0]
+            current_key = g_chamber_conf[0]
         return self.render('preview.html',
                            page_name = 'preview',
                            current_key = current_key,
@@ -25,12 +38,8 @@ class preview_realtime_handler(base_handler):
     def get(self):
         current_chamber_key = self.get_argument('current_chamber_key', '')
         if current_chamber_key != '':
-            # print current_chamber_key
             mac_address = current_chamber_key.split(',')[0]
             postion = current_chamber_key.split(',')[1]
-            # type = 'measured_concentration'
-            # print mac_address
-            # print postion
             tasks.redis_query.apply_async(args=[mac_address, postion], callback=self.on_success)
     def on_success(self, resp):
         data=[]
@@ -47,7 +56,6 @@ class preview_realtime_handler(base_handler):
             data.append(plot_data)
         except:
             data.append('')
-        # print data
         data=json.dumps(data)
         self.write(data)
         self.finish()

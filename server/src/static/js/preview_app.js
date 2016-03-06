@@ -3,7 +3,13 @@
  */
 var sign
 function on_selecteditem_change(){
-    render_chart()
+    render_chart([[],[]])
+    var date = new Date()
+    var end_time = date.pattern("yyyy-MM-dd hh:mm")
+    var date_milliseconds = date.getTime()
+    date_milliseconds -= 1000*60*19
+    date = new Date(date_milliseconds)
+    var start_time = date.pattern("yyyy-MM-dd hh:mm")
     //var chart = $('#container').highcharts()
     //var series = chart.series;
     //series[0].remove(false)
@@ -17,6 +23,28 @@ function on_selecteditem_change(){
         //}
         //var chart = new Highcharts.Chart()
         //chart.setTitle(title)
+        $.ajax({
+                url:'history/query',
+                type:'GET',
+                dataType:'text',
+                data:{'mac_address':$('#chamber_name').children('option:selected').attr('value').split(',')[0],
+                      'position':$('#chamber_name').children('option:selected').attr('value').split(',')[1],
+                      'type':'',
+                      'start_time':start_time,
+                      'end_time':end_time
+                      },
+                success:function(data, status){
+                    if(data==''){
+                        //alert('所选择的时间段没有数据!')
+                        return
+                    }
+                    else{
+                        var jdata= $.parseJSON(data)
+                        render_chart(jdata)
+                    }
+
+                },
+            })
         sign=setInterval(
             function(){
                 $.ajax({
@@ -39,7 +67,7 @@ function on_selecteditem_change(){
                             serie_2_len = series[1].data.length
                             if(serie_1_len != 0){
                                 if(series[0].data[serie_1_len-1]['x'] != plot_data[0][0]){
-                                    if(plot_data[0][0]-series[0].data[0]['x']>=60*1000){
+                                    if(plot_data[0][0]-series[0].data[0]['x']>=20*60*1000){
                                         series[0].addPoint(plot_data[0],true,true)
                                     }
                                     else{
@@ -52,7 +80,7 @@ function on_selecteditem_change(){
                             }
                             if(serie_2_len != 0){
                                 if(series[1].data[serie_2_len-1]['x'] != plot_data[1][0]){
-                                    if(plot_data[1][0]-series[1].data[0]['x']>=60*1000){
+                                    if(plot_data[1][0]-series[1].data[0]['x']>=20*60*1000){
                                         series[1].addPoint(plot_data[1],true,true)
                                     }
                                     else{
@@ -74,7 +102,9 @@ function on_selecteditem_change(){
                             //alert(innerHTML_str)
                             //document.getElementById('detail_content').innerHTML = innerHTML_str
                             for (var i=0;i<(detail_data.length)/2;i++){
-                                innerHTML_str = innerHTML_str+'<tr>'+'<td>'+detail_data[2*i]+'</td>'+'<td>'+detail_data[2*i+1]+'</td>'+'</tr>'
+				var value = parseFloat(detail_data[2*i+1])
+				value = value.toFixed(2)
+                                innerHTML_str = innerHTML_str+'<tr>'+'<td>'+detail_data[2*i]+'</td>'+'<td>'+value+'</td>'+'</tr>'
                             }
                             document.getElementById('detail_content').innerHTML = innerHTML_str
                             //alert(innerHTML_str)
@@ -92,7 +122,7 @@ $(function(){
     //    });
     on_selecteditem_change()
 })
-function render_chart(){
+function render_chart(datas){
     Highcharts.setOptions({
             global: {
                 useUTC: false
@@ -124,7 +154,7 @@ function render_chart(){
 
             xAxis: {
                 type: 'datetime',
-                minRange:60*1000
+                minRange:20*60*1000
                 //minRange:60*1000
 
             },
@@ -170,6 +200,7 @@ function render_chart(){
                     //    }
                     //    return data;
                     //}())
+                    data:datas[0]
                 },
                 {
                     name: '目标浓度',
@@ -187,6 +218,41 @@ function render_chart(){
                     //    }
                     //    return data;
                     //}())
+                    data:datas[1]
                 }]
         })
+}
+
+Date.prototype.pattern=function(fmt) {
+    var o = {
+    "M+" : this.getMonth()+1, //月份
+    "d+" : this.getDate(), //日
+    "h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时
+    "H+" : this.getHours(), //小时
+    "m+" : this.getMinutes(), //分
+    "s+" : this.getSeconds(), //秒
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度
+    "S" : this.getMilliseconds() //毫秒
+    };
+    var week = {
+    "0" : "/u65e5",
+    "1" : "/u4e00",
+    "2" : "/u4e8c",
+    "3" : "/u4e09",
+    "4" : "/u56db",
+    "5" : "/u4e94",
+    "6" : "/u516d"
+    };
+    if(/(y+)/.test(fmt)){
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    }
+    if(/(E+)/.test(fmt)){
+        fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "/u661f/u671f" : "/u5468") : "")+week[this.getDay()+""]);
+    }
+    for(var k in o){
+        if(new RegExp("("+ k +")").test(fmt)){
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+        }
+    }
+    return fmt;
 }

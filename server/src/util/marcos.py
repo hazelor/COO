@@ -1,4 +1,5 @@
 #about db
+# DB_USER = 'root'
 DB_USER = 'sonic513'
 
 DB_USER_PASSWORD = 'sonic513'

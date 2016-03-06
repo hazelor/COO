@@ -3,7 +3,6 @@
 <link rel="stylesheet" type="text/css" media="screen" href="/static/css/setting_app.css">
 <script src="/static/js/setting_app.js"></script>
 
-<link rel="stylesheet" type="text/css" media="screen" href="/static/css/custom-theme/jquery-ui-1.9.2.custom.css">
 <script src="/static/js/jquery-ui-1.9.2.custom.min.js"></script>
 
 {%end%}
@@ -21,7 +20,7 @@
         </div>
 
         {%if sub_page_name == 'basic'%}
-            {%module basic()%}
+            {%include setting_basic.html%}
         {%end%}
     </div>
 </div>

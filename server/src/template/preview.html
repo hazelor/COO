@@ -11,9 +11,9 @@
 
 {%block content%}
     <div class="row">
-        <select class="combobox form-control" id="chamber_name" value="{{current_key}}" onchange='on_selecteditem_change()'>
-            {%for key, item in chambers.items()%}
-                <option value="{{key}}">{{item['name']}}</option>
+        <select class="combobox form-control" id="chamber_name" value="{{current_key[0]}}" onchange='on_selecteditem_change()'>
+            {%for item in chambers%}
+                <option value="{{item[0]}}">{{item[1]}}</option>
             {%end%}
         </select>
     </div>

@@ -23,6 +23,8 @@ def create_app():
         'xsrf_cookies':False,
         'debug':options.debug,
         'ui_modules':routes.modules,
+	    'cookie_secret':'w2y6GNORTDmGKsYK8wr2tBfclMQcCkpYim3AmQafKrw=',
+        'login_url':'/login'
     }
     return tornado.web.Application(routes.handlers, **settings)
 
