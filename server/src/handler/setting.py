@@ -24,7 +24,7 @@ class setting_handler(base_handler):
         mac_address_list = (self.current_user).strip().split(',')
         g_interval_conf=[]
         for item in mac_address_list:
-            sql = "select mac_address,location from device where mac_address='%s' " % (item)
+            sql = "select mac_address,location,duration from device where mac_address='%s' " % (item)
             with database_resource() as cursor:
                 cursor.execute(sql)
                 data = cursor.fetchall()

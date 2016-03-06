@@ -12,12 +12,12 @@
                             </div>
                         </span>
                         <select class="combobox form-control duration">
-                            <option value="1">1s</option>
-                            <option value="2">2s</option>
-                            <option value="10">10s</option>
-                            <option value="30">30s</option>
-                            <option value="60">1min</option>
-                            <option value="600">10min</option>
+                            <option value="1" {%if di[2] == '1'%}selected="selected"{%end%}>1s</option>
+                            <option value="2" {%if di[2] == '2'%}selected="selected"{%end%}>2s</option>
+                            <option value="10" {%if di[2] == '10'%}selected="selected"{%end%}>10s</option>
+                            <option value="30" {%if di[2] == '30'%}selected="selected"{%end%}>30s</option>
+                            <option value="60" {%if di[2] == '60'%}selected="selected"{%end%}>1min</option>
+                            <option value="600" {%if di[2] == '600'%}selected="selected"{%end%}>10min</option>
                          </select>
                     </div><!-- /input-group -->
                 </div><!-- /.col-lg-6 -->

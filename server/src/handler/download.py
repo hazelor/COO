@@ -19,6 +19,7 @@ class download_handler(base_handler):
     @tornado.web.authenticated
     @tornado.web.asynchronous
     def get(self):
+        # time.sleep(10)
         mac_address_list = (self.current_user).strip().split(',')
         # print mac_address_list
         is_file_download = self.get_argument('is_file_download', False)
@@ -37,6 +38,7 @@ class download_handler(base_handler):
                            )
 
     def get_download_file(self, mac_address_list, start_time, end_time):
+        # time.sleep(10)
         # tasks.data_zip.apply_async(args=[mac_address_list, start_time, end_time], callback=self.on_success)
         tasks.data_zip_by_category.apply_async(args=[mac_address_list, start_time, end_time], callback=self.on_success)
 

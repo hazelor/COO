@@ -12,6 +12,7 @@ import json
 from util.commons import *
 import time
 from util.dbtool import *
+import time
 
 
 
@@ -64,6 +65,7 @@ tcelery.setup_nonblocking_producer()
 class history_query_handler(base_handler):
     @tornado.web.asynchronous
     def get(self):
+        # time.sleep(10)
         mac_address=self.get_argument('mac_address')
         # mac_address=get_md5(mac_address)
         position=self.get_argument('position')
