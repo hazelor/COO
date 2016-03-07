@@ -40,14 +40,15 @@ function download_datas(){
                     //can_download = true
                     document.getElementById('download_link').href = href;
                     document.getElementById('download_link').download = file_name;
+                    document.getElementById("download_button").click()
                     loading_end()
                     is_downloading = false
                     return true
                 }
                 else{
                     alert('获取数据失败!')
-                    document.getElementById('download_link').href = ''
-                    document.getElementById('download_link').download = ''
+                    //document.getElementById('download_link').href = ''
+                    //document.getElementById('download_link').download = ''
                     loading_end()
                     is_downloading = false
                     return false
@@ -55,8 +56,8 @@ function download_datas(){
             },
             error:function(){
                     alert('获取数据失败!')
-                    document.getElementById('download_link').href = ''
-                    document.getElementById('download_link').download = ''
+                    //document.getElementById('download_link').href = ''
+                    //document.getElementById('download_link').download = ''
                     loading_end()
                     is_downloading = false
                     return false
@@ -65,8 +66,8 @@ function download_datas(){
     }
     else{
         //alert('获取数据失败!')
-        document.getElementById('download_link').href = ''
-        document.getElementById('download_link').download = ''
+        //document.getElementById('download_link').href = ''
+        //document.getElementById('download_link').download = ''
         return false
     }
 
