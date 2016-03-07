@@ -7,6 +7,7 @@ import confUtils
 from queueUtils import DataPool
 from commUtils import *
 from confUtils import *
+import gpio, time
 
 dev_conf = get_dev_conf()
 
@@ -83,9 +84,16 @@ def formCommand(addr, code, start_pos, end_pos):
 def exe_collection_datas(args):
     ser = args['serial']
     command = formCommand(1, 3, 0, 50)
+    #print command
     hexer = intArrayToString(command).decode("hex")
+    gpio.digital_write(2,0)
     ser.write(hexer)
+    time.sleep(0.01)
+    gpio.digital_write(2,1)
     ans = ser.readall()
+    #print len(ans)
+    time.sleep(0.01)
+    gpio.digital_write(2,0)    
     construct_datas(ans)
 
 
@@ -102,10 +110,13 @@ def construct_datas(ans):
         c_res['date'] = date
         c_res['position'] = pos_content['position']
         c_res['data'] = {}
-        for data_content in pos_content['contents']:
-            c_res['data'][data_content['name']] = bytes_to_float(ans, data_content['start_pos']+start_pos)
+	try:
+            for data_content in pos_content['contents']:
+                c_res['data'][data_content['name']] = bytes_to_float(ans, data_content['start_pos']+start_pos)
         #print 'tag:------------', c_res
-        DataPool.get_instance().push_data(c_res)
+            DataPool.get_instance().push_data(c_res)
+	except:
+	    pass
     #DataPool.get_instance().push_data(c_res)
 
 

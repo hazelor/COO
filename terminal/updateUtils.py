@@ -30,8 +30,12 @@ def update_data(c_data):
 def update_ctrl():
     url = "http://{0}:{1}{2}".format(SERVER_URL, UPDATE_PORT, API_CTRL_URL)
     try:
-        res = urllib2.urlopen(url)
+        print get_md5(get_mac_address())
+        data = {'mac_address': get_md5(get_mac_address())} 
+        j_data = json.dumps(data)
+        res = urllib2.urlopen(url, j_data)
         j_res = json.loads(res.read())
+        print j_res
         duration = int(j_res['duration'])
         if duration == get_update_duration():
             return
