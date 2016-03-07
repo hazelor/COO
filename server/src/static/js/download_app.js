@@ -25,7 +25,7 @@ function download_datas(){
         //alert('--------test--------')
         $.ajax({
             url:'/download',
-            async: false,
+            //async: false,
             type:'get',
             data:{'is_file_download':true,
                   'start_time':document.getElementById('start_time').value,
