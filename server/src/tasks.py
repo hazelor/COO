@@ -168,36 +168,56 @@ def data_zip_by_category(mac_address_list, start_time, end_time):
     category_file_list = []
     file_dir = os.path.join(getPWDDir(),DOWNLOAD_DIR)
     for k,category_name in short_name_to_english_name.items():
-        category_file_path=os.path.join(file_dir,category_name+'.csv')
-        category_file_list.append(category_file_path)
-        datas_dict=collections.OrderedDict()
+        # category_file_path=os.path.join(file_dir,category_name+'.csv')
+        # category_file_list.append(category_file_path)
+        # datas_dict=collections.OrderedDict()
         for mac_address in mac_address_list:
+	    # datas_dict=collections.OrderedDict()
+	    index=1
+	    file_list=[]
             with database_resource() as cursor:
+                sql="select location from device WHERE mac_address='%s' "%(mac_address)
+                cursor.execute(sql)
+                mac_address_name=cursor.fetchone()
+		category_file_path=os.path.join(file_dir,mac_address_name[0]+category_name+'.csv')
+		category_file_list.append(category_file_path)
                 sql="select position from %s_%s WHERE mac_address='%s' "%(category_name, 'member', mac_address)
                 cursor.execute(sql)
                 positions = cursor.fetchall()
             # datas_dict={}
             for position in positions:
+		file_path=os.path.join(file_dir,mac_address_name[0]+category_name+'-%d.csv'%(index))
+		file_list.append(file_path)
+		index+=1
                 mac_address_position = ','.join([mac_address,position[0]])
                 with database_resource() as cursor:
                     sql="select name from air_chamber WHERE mac_address_position='%s' "%(mac_address_position)
                     cursor.execute(sql)
                     name=cursor.fetchone()
-                    # datas_dict[name]=[]
-                # with database_resource() as cursor:
                     sql="select date,value from %s WHERE mac_address='%s' and position='%s' and date BETWEEN %s AND %s "%(category_name, mac_address, position[0], start_time, end_time)
                     cursor.execute(sql)
-                    data=cursor.fetchall()
-                    datas_dict[name]=data
-        f= open(category_file_path,'w+')
-        for k,v in datas_dict.items():
-            line_list=[]
-            line_list.append("%s,%s,\n" %("date time", k[0]))
-            for d in v:
-                line_list.append("%s,%f,\n" %(time.strftime("%Y-%m-%d %X", time.localtime(d[0])), d[1]))
-            f.writelines(line_list)
-        f.flush()
-        f.close()
+                    datas=cursor.fetchall()
+                    # datas_dict[name]=data
+            	f= open(file_path,'w+')
+            	# for k,v in datas_dict.items():
+		if datas:
+                    line_list=[]
+                    line_list.append("%s,%s,\n" %("date time", name[0]))
+                    for data in datas:
+                        line_list.append("%s,%f,\n" %(time.strftime("%Y-%m-%d %X", time.localtime(data[0])), data[1]))
+                    f.writelines(line_list)
+            	f.flush()
+            	f.close()
+	    # merge file
+	    cmd='paste'
+	    for p in file_list:
+	        cmd=cmd+' '+p
+	    cmd=cmd+'|cat > '+category_file_path
+	    os.system(cmd)
+	    cmd='rm '
+	    rm_file_path=os.path.join(file_dir,mac_address_name[0]+category_name+'-')
+	    cmd=cmd+rm_file_path+'*'
+	    os.system(cmd)
     local_time = time.localtime(time.time())
     zip_file_name = "data_%d_%d_%d_%d_%d_%d.zip" %(local_time.tm_year, local_time.tm_mon, local_time.tm_mday, local_time.tm_hour, local_time.tm_min, local_time.tm_sec)
     zip_file_path = os.path.join(file_dir, zip_file_name)
