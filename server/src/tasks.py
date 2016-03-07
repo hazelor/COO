@@ -192,7 +192,7 @@ def data_zip_by_category(mac_address_list, start_time, end_time):
         f= open(category_file_path,'w+')
         for k,v in datas_dict.items():
             line_list=[]
-            line_list.append("%s,%s,\n" %("date time", k))
+            line_list.append("%s,%s,\n" %("date time", k[0]))
             for d in v:
                 line_list.append("%s,%f,\n" %(time.strftime("%Y-%m-%d %X", time.localtime(d[0])), d[1]))
             f.writelines(line_list)
