@@ -19,7 +19,8 @@ class ctrl_handler(base_handler):
         sql="select duration from device WHERE mac_address='%s' "%(mac_address)
         tasks.db_query_basic.apply_async(args=[sql], callback=self.on_success)
     def on_success(self, resp):
-        resp = json.dumps(resp.result)
+        resp = resp.result[0][0]
+        # resp = json.dumps()
         # print resp
-        self.write(resp[0][0])
+        self.write(resp)
         self.finish()
