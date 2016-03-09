@@ -78,6 +78,8 @@ class CountDownExec(CountDownTimer):
     def set_duration(self, seconds):
         self.seconds = seconds
         self.runTime = seconds
+        TProcess = CountDownExec(self.seconds, self.action, self.args)
+        TProcess.start()
 
 
 def bytes_to_int(buf, offset):
