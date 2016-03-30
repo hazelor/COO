@@ -83,7 +83,7 @@ def formCommand(addr, code, start_pos, end_pos):
 
 def exe_collection_datas(args):
     ser = args['serial']
-    command = formCommand(1, 3, 0, 50)
+    command = formCommand(1, 3, 0, 72)
     #print command
     hexer = intArrayToString(command).decode("hex")
     gpio.digital_write(2,0)
@@ -91,7 +91,7 @@ def exe_collection_datas(args):
     time.sleep(0.01)
     gpio.digital_write(2,1)
     ans = ser.readall()
-    #print len(ans)
+    print len(ans)
     time.sleep(0.01)
     gpio.digital_write(2,0)    
     construct_datas(ans)
@@ -113,11 +113,12 @@ def construct_datas(ans):
 	try:
             for data_content in pos_content['contents']:
                 c_res['data'][data_content['name']] = bytes_to_float(ans, data_content['start_pos']+start_pos)
-        #print 'tag:------------', c_res
+            print 'tag:------------', c_res
             DataPool.get_instance().push_data(c_res)
 	except:
 	    pass
     #DataPool.get_instance().push_data(c_res)
 
 
-
+if __name__ == '__main__':
+    exe_collection_datas({'serial':init_serial_port()})

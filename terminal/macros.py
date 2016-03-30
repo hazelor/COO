@@ -13,15 +13,19 @@ SOIL_TEMPERATURE = "soil_temperature" #土壤温度
 MEASURED_CONCENTRATION = "measured_concentration" #测量浓度
 TARGET_CONCENTRATION = "target_concentration" #目标浓度
 
+MEASURED_CONCENTRATION_AVG_30M = "measured_concentration_avg_30m"
+MEASURED_CONCENTRATION_AVG_20S = "measured_concentration_avg_20s"
+CALIBRATE_CONCENTRATION = "calibrate_concentration"
 
-SERVER_URL = "123.57.60.239"
+#SERVER_URL = "52.32.13.119"
+SERVER_URL = "www.thcreate.com"
 UPDATE_PORT = "8080"
 
 API_DATACHANNEL_URL = "/api/dataChannel"
 API_CTRL_URL = "/api/ctrl"
 
 
-SERIAL_PORT_NAME = '/dev/ttyS1'
+SERIAL_PORT_NAME = '/dev/ttyS3'
 SERIAL_PORT_BAUD = 9600
 SERIAL_PORT_TIMEOUT = 0.5
 

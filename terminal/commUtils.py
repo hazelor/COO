@@ -4,6 +4,7 @@ import uuid, md5
 import threading, time
 import struct
 import socket,struct, fcntl
+import redis
 
 
 def get_ip_address(ifname): 
@@ -72,7 +73,16 @@ class CountDownExec(CountDownTimer):
     def run(self):
         CountDownTimer.run(self)
         self.action(self.args)
-        TProcess = CountDownExec(self.seconds, self.action, self.args)
+        # TProcess = CountDownExec(self.seconds, self.action, self.args)
+
+        r=redis.Redis()
+        duration = r.get('duration')
+        if duration:
+            duration = int(duration)
+        else:
+            duration = 10
+        TProcess = CountDownExec(duration, self.action, self.args)
+       
         TProcess.start()
 
     def set_duration(self, seconds):
