@@ -19,8 +19,8 @@ def set_update_duration(duration):
 
 def get_dev_conf():
     pos1 = {'position': 1, 'contents':[]}
-    name_list = [TARGET_CONCENTRATION, MEASURED_CONCENTRATION, AIR_TEMPERATURE, AIR_HUMIDITY, SOIL_TEMPERATURE, SOIL_HUMIDITY,MEASURED_CONCENTRATION_AVG_20S,CALIBRATE_CONCENTRATION]
-    start_pos_list = [0, 4, 40, 60, 80, 88,104,124]
+    name_list = [TARGET_CONCENTRATION, MEASURED_CONCENTRATION, AIR_TEMPERATURE, AIR_HUMIDITY, SOIL_TEMPERATURE, SOIL_HUMIDITY,MEASURED_CONCENTRATION_AVG_20S,CALIBRATE_CONCENTRATION, OBJECT_DIFF, ACTION_TIME, BACKUP1, BACKUP2]
+    start_pos_list = [0, 4, 40, 60, 80, 88,104,124, 144, 160, 176, 196]
     para = {'name':TARGET_CONCENTRATION, 'start_pos': 0, 'length': 4, 'type': 'float'}
 
     for i in range(len(name_list)):
@@ -31,8 +31,8 @@ def get_dev_conf():
         pos1['contents'].append(para)
 
     pos2 = {'position': 2, 'contents': []}
-    name_list = [TARGET_CONCENTRATION, MEASURED_CONCENTRATION, AIR_TEMPERATURE, AIR_HUMIDITY, MEASURED_CONCENTRATION_AVG_20S, CALIBRATE_CONCENTRATION]
-    start_pos_list = [8, 12, 44, 64,108,128]
+    name_list = [TARGET_CONCENTRATION, MEASURED_CONCENTRATION, AIR_TEMPERATURE, AIR_HUMIDITY, MEASURED_CONCENTRATION_AVG_20S, CALIBRATE_CONCENTRATION, OBJECT_DIFF, ACTION_TIME, BACKUP1, BACKUP2]
+    start_pos_list = [8, 12, 44, 64,108,128, 148, 164, 180, 200]
     for i in range(len(name_list)):
         para = copy.copy(para)
         para['name'] = name_list[i]
@@ -41,8 +41,8 @@ def get_dev_conf():
         pos2['contents'].append(para)
 
     pos3 = {'position': 3, 'contents': []}
-    name_list = [TARGET_CONCENTRATION, MEASURED_CONCENTRATION, AIR_TEMPERATURE, AIR_HUMIDITY,MEASURED_CONCENTRATION_AVG_20S, CALIBRATE_CONCENTRATION]
-    start_pos_list = [16, 20, 48, 68, 112, 132]
+    name_list = [TARGET_CONCENTRATION, MEASURED_CONCENTRATION, AIR_TEMPERATURE, AIR_HUMIDITY,MEASURED_CONCENTRATION_AVG_20S, CALIBRATE_CONCENTRATION, OBJECT_DIFF, ACTION_TIME, BACKUP1, BACKUP2]
+    start_pos_list = [16, 20, 48, 68, 112, 132, 152, 168, 184, 204]
     for i in range(len(name_list)):
         para = copy.copy(para)
         para['name'] = name_list[i]
@@ -51,8 +51,8 @@ def get_dev_conf():
         pos3['contents'].append(para)
 
     pos4 = {'position': 4, 'contents': []}
-    name_list = [TARGET_CONCENTRATION, MEASURED_CONCENTRATION, AIR_TEMPERATURE, AIR_HUMIDITY,MEASURED_CONCENTRATION_AVG_20S, CALIBRATE_CONCENTRATION]
-    start_pos_list = [24, 28, 52, 72, 116, 136]
+    name_list = [TARGET_CONCENTRATION, MEASURED_CONCENTRATION, AIR_TEMPERATURE, AIR_HUMIDITY,MEASURED_CONCENTRATION_AVG_20S, CALIBRATE_CONCENTRATION, OBJECT_DIFF, ACTION_TIME, BACKUP1, BACKUP2]
+    start_pos_list = [24, 28, 52, 72, 116, 136, 156, 172, 188, 208]
     for i in range(len(name_list)):
         para = copy.copy(para)
         para['name'] = name_list[i]
@@ -61,8 +61,8 @@ def get_dev_conf():
         pos4['contents'].append(para)
 
     pos5 = {'position': 5, 'contents': []}
-    name_list = [MEASURED_CONCENTRATION, AIR_TEMPERATURE, AIR_HUMIDITY,SOIL_TEMPERATURE, SOIL_HUMIDITY,MEASURED_CONCENTRATION_AVG_30M, MEASURED_CONCENTRATION_AVG_20S, CALIBRATE_CONCENTRATION ]
-    start_pos_list = [96, 56, 76, 84, 92,100,120,140]
+    name_list = [MEASURED_CONCENTRATION, AIR_TEMPERATURE, AIR_HUMIDITY,SOIL_TEMPERATURE, SOIL_HUMIDITY,MEASURED_CONCENTRATION_AVG_30M, MEASURED_CONCENTRATION_AVG_20S, CALIBRATE_CONCENTRATION, BACKUP1,BACKUP2 ]
+    start_pos_list = [96, 56, 76, 84, 92,100,120,140, 192, 212]
     for i in range(len(name_list)):
         para = copy.copy(para)
         para['name'] = name_list[i]

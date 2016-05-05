@@ -19,7 +19,7 @@ def update_data(c_data):
     j_data = json.dumps(c_data)
     req = urllib2.Request(url, j_data)
     try:
-        res = urllib2.urlopen(req)
+        res = urllib2.urlopen(req, timeout = 30)
         if res.read().strip() == RES_SUCCESS:
             return True
         else:
@@ -34,7 +34,7 @@ def update_ctrl():
         print get_md5(get_mac_address())
         data = {'mac_address': get_md5(get_mac_address())} 
         j_data = json.dumps(data)
-        res = urllib2.urlopen(url, j_data)
+        res = urllib2.urlopen(url, j_data, timeout=30)
         # j_res = json.loads(res.read())
         # print j_res
         # duration = int(j_res['duration'])
