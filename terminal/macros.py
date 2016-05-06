@@ -16,6 +16,10 @@ TARGET_CONCENTRATION = "target_concentration" #目标浓度
 MEASURED_CONCENTRATION_AVG_30M = "measured_concentration_avg_30m"
 MEASURED_CONCENTRATION_AVG_20S = "measured_concentration_avg_20s"
 CALIBRATE_CONCENTRATION = "calibrate_concentration"
+OBJECT_DIFF = "object_diff"
+ACTION_TIME = "action_time"
+BACKUP1 = "backup1"
+BACKUP2 = "backup2"
 
 #SERVER_URL = "52.32.13.119"
 SERVER_URL = "www.thcreate.com"
