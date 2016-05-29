@@ -24,7 +24,7 @@ platforms.C_FORCE_ROOT = True
 @celery.task(name='handler.tasks.db_save')
 def db_save(jdatas):
     r=redis.Redis()
-    data_dict={'air_temperature':[],'air_humidity':[],'soil_temperature':[],'soil_humidity':[],'measured_concentration':[],'target_concentration':[]}
+    data_dict={'air_temperature':[],'air_humidity':[],'soil_temperature':[],'soil_humidity':[],'measured_concentration':[],'target_concentration':[], 'measured_concentration_avg_30m':[],'measured_concentration_avg_20s':[],'calibrate_concentration':[]}
     if len(jdatas) != 0:
         for jdata in jdatas:
             mac_address=jdata['mac_address']
@@ -40,6 +40,9 @@ def db_save(jdatas):
         cursor.executemany('insert into soil_humidity (mac_address, position, value, date) values (%s, %s, %s, %s)', data_dict['soil_humidity'])
         cursor.executemany('insert into measured_concentration (mac_address, position, value, date) values (%s, %s, %s, %s)', data_dict['measured_concentration'])
         cursor.executemany('insert into target_concentration (mac_address, position, value, date) values (%s, %s, %s, %s)', data_dict['target_concentration'])
+        cursor.executemany('insert into measured_concentration_avg_30m (mac_address, position, value, date) values (%s, %s, %s, %s)', data_dict['measured_concentration_avg_30m'])
+        cursor.executemany('insert into measured_concentration_avg_20s (mac_address, position, value, date) values (%s, %s, %s, %s)', data_dict['measured_concentration_avg_20s'])
+        cursor.executemany('insert into calibrate_concentration (mac_address, position, value, date) values (%s, %s, %s, %s)', data_dict['calibrate_concentration'])
     return 'Y'
 
 @celery.task(name='handler.tasks.db_query')
@@ -47,16 +50,26 @@ def db_query(mac_address, position, type, start_time, end_time):
     if type=='':
         data=[]
         with database_resource() as cursor:
-            sql = "select date,value from %s where mac_address='%s' and position=%s and date BETWEEN %s and %s" % ('measured_concentration', mac_address, position, start_time, end_time)
+            sql = "select date,value from %s where mac_address='%s' and position=%s and date BETWEEN %s and %s" % ('measured_concentration_avg_20s', mac_address, position, start_time, end_time)
             cursor.execute(sql)
             measured_concentration_data=cursor.fetchall()
             sql = "select date,value from %s where mac_address='%s' and position=%s and date BETWEEN %s and %s" % ('target_concentration', mac_address, position, start_time, end_time)
             cursor.execute(sql)
             target_concentration_data=cursor.fetchall()
-        if target_concentration_data and measured_concentration_data:
+        # if target_concentration_data and measured_concentration_data:
+        #     data.append(measured_concentration_data)
+        #     data.append(target_concentration_data)
+        #     return data
+        if measured_concentration_data:
             data.append(measured_concentration_data)
+        else:
+            data.append('')
+        if target_concentration_data:
             data.append(target_concentration_data)
-            return data
+        else:
+            data.append('')
+        return data
+        
 
     else:
         sql = "select date,value from %s where mac_address='%s' and position=%s and date BETWEEN %s and %s" % (type, mac_address, position, start_time, end_time)
@@ -71,12 +84,12 @@ def db_query(mac_address, position, type, start_time, end_time):
 
 @celery.task(name='handler.tasks.redis_query')
 def redis_query(mac_address, postion):
-    type_list=[{'air_temperature':'空气温度'},{'air_humidity':'空气湿度'},{'soil_temperature':'土壤温度'},{'soil_humidity':'土壤湿度'},{'measured_concentration':'测量浓度'},{'target_concentration':'目标浓度'}]
+    type_list=[{'air_temperature':'空气温度'},{'air_humidity':'空气湿度'},{'soil_temperature':'土壤温度'},{'soil_humidity':'土壤湿度'},{'measured_concentration':'测量浓度'},{'target_concentration':'目标浓度'},{'measured_concentration_avg_30m':'测量浓度30min均值'},{'measured_concentration_avg_20s':'测量浓度20s均值'},{'calibrate_concentration':'传感器校准值'}]
     data=[[],[[],[]]]
     r=redis.Redis()
     # mac_address = get_md5(mac_address)
-    data[1][0].append(r.hget(mac_address+','+postion+','+'measured_concentration', 'date'))
-    data[1][0].append(r.hget(mac_address+','+postion+','+'measured_concentration', 'value'))
+    data[1][0].append(r.hget(mac_address+','+postion+','+'measured_concentration_avg_20s', 'date'))
+    data[1][0].append(r.hget(mac_address+','+postion+','+'measured_concentration_avg_20s', 'value'))
     data[1][1].append(r.hget(mac_address+','+postion+','+'target_concentration', 'date'))
     data[1][1].append(r.hget(mac_address+','+postion+','+'target_concentration', 'value'))
     # data = json.dumps(data)
@@ -168,11 +181,7 @@ def data_zip_by_category(mac_address_list, start_time, end_time):
     category_file_list = []
     file_dir = os.path.join(getPWDDir(),DOWNLOAD_DIR)
     for k,category_name in short_name_to_english_name.items():
-        # category_file_path=os.path.join(file_dir,category_name+'.csv')
-        # category_file_list.append(category_file_path)
-        # datas_dict=collections.OrderedDict()
         for mac_address in mac_address_list:
-	    # datas_dict=collections.OrderedDict()
 	    index=1
 	    file_list=[]
             with database_resource() as cursor:
@@ -184,7 +193,6 @@ def data_zip_by_category(mac_address_list, start_time, end_time):
                 sql="select position from %s_%s WHERE mac_address='%s' "%(category_name, 'member', mac_address)
                 cursor.execute(sql)
                 positions = cursor.fetchall()
-            # datas_dict={}
             for position in positions:
 		file_path=os.path.join(file_dir,mac_address_name[0]+category_name+'-%d.csv'%(index))
 		file_list.append(file_path)
@@ -197,9 +205,7 @@ def data_zip_by_category(mac_address_list, start_time, end_time):
                     sql="select date,value from %s WHERE mac_address='%s' and position='%s' and date BETWEEN %s AND %s "%(category_name, mac_address, position[0], start_time, end_time)
                     cursor.execute(sql)
                     datas=cursor.fetchall()
-                    # datas_dict[name]=data
             	f= open(file_path,'w+')
-            	# for k,v in datas_dict.items():
 		if datas:
                     line_list=[]
                     line_list.append("%s,%s,\n" %("date time", name[0]))
@@ -227,8 +233,6 @@ def data_zip_by_category(mac_address_list, start_time, end_time):
     cmd = "rm %s" %(zip_files_name)
     os.system(cmd)
     return zip_file_name
-
-
 
 @celery.task(name='handler.tasks.user_check')
 def user_check(username, password):
