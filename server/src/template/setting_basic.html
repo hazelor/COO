@@ -1,30 +1,32 @@
 <div class="panel panel-default">
     <div class="panel-heading">基本信息</div>
     <div class="panel-body">
-        {%for di in devices_info %}
             <div class="row">
-                <div class="col-lg-8">
-                    <div class="input-group dev_interval">
-                        <span class="input-group-addon" >
-                            {{di[1]}}
-                            <div style="display: none">
-                                {{di[0]}}
-                            </div>
-                        </span>
-                        <select class="combobox form-control duration">
-                            <option value="1" {%if di[2] == '1'%}selected="selected"{%end%}>1s</option>
-                            <option value="2" {%if di[2] == '2'%}selected="selected"{%end%}>2s</option>
-                            <option value="10" {%if di[2] == '10'%}selected="selected"{%end%}>10s</option>
-                            <option value="30" {%if di[2] == '30'%}selected="selected"{%end%}>30s</option>
-                            <option value="60" {%if di[2] == '60'%}selected="selected"{%end%}>1min</option>
-                            <option value="600" {%if di[2] == '600'%}selected="selected"{%end%}>10min</option>
-                         </select>
-                    </div><!-- /input-group -->
-                </div><!-- /.col-lg-6 -->
-            </div><!-- /.row -->
-        {% end %}
+                {%for di in devices_info  %}
+                    <div class="col-lg-8">
+                        <div class="input-group dev_interval">
+                            <span class="input-group-addon" >
+                                {{di[1]}}
+                                <div style="display: none">
+                                    {{di[0]}}
+                                </div>
+                            </span>
+                            <select class="combobox form-control duration">
+                                <option value="1" {%if di[2] == '1'%}selected="selected"{%end%}>1s</option>
+                                <option value="2" {%if di[2] == '2'%}selected="selected"{%end%}>2s</option>
+                                <option value="10" {%if di[2] == '10'%}selected="selected"{%end%}>10s</option>
+                                <option value="30" {%if di[2] == '30'%}selected="selected"{%end%}>30s</option>
+                                <option value="60" {%if di[2] == '60'%}selected="selected"{%end%}>1min</option>
+                                <option value="600" {%if di[2] == '600'%}selected="selected"{%end%}>10min</option>
+                            </select>
+                        </div>
+                    </div>
+                {% end %}
+                    <div class="col-lg-8">
+                        <div class="input-group">
+                            <input type="text" id="reboot_btn" class="form-control btn btn-primary" role="button" value="确定" onclick="update_intervals()">
+                        </div>
+                    </div>
+            </div>
     </div>
 </div>
-<div class="input-group">
-    <input type="text" id="reboot_btn" class="form-control btn btn-primary" role="button" value="确定" onclick="update_intervals()">
-</div><!-- /input-group -->
