@@ -6,7 +6,7 @@ __author__ = 'guoxiao'
 from base import base_handler
 import tornado
 import tcelery
-import tasks
+import tasks_for_syn
 from util.confs import *
 import json
 from util.commons import *
@@ -35,7 +35,12 @@ class history_handler(base_handler):
             current_member_list = g_chamber_conf[0][2].strip().split('_')
             data_list=[]
             for item in current_member_list:
-                data_list.append((short_name_to_english_name[item], short_name_to_chinese_name[item]))
+                if item == 'mc':
+                    continue
+                if item == 'mcs':
+                    data_list.append((short_name_to_english_name[item], '测量浓度'))
+                else:  
+                    data_list.append((short_name_to_english_name[item], short_name_to_chinese_name[item]))
             # current_data_key = g_chamber_conf[current_chamber_key]['data_contents'].keys()[0]
             return self.render('history.html',
                                 page_name = 'history',
@@ -54,16 +59,22 @@ class history_handler(base_handler):
                 data_list=[]
                 current_member_list = data[0].strip().split('_')
                 for item in current_member_list:
-                    data_list.append((short_name_to_english_name[item], short_name_to_chinese_name[item]))
+                    if item == 'mc':
+                        continue
+                    if item == 'mcs':
+                        data_list.append((short_name_to_english_name[item], '测量浓度'))
+                    else:
+                        data_list.append((short_name_to_english_name[item], short_name_to_chinese_name[item]))
             j_data_contents = json.dumps(data_list)
             self.write(j_data_contents)
 
 
 
-tcelery.setup_nonblocking_producer()
+# tcelery.setup_nonblocking_producer()
 
 class history_query_handler(base_handler):
     @tornado.web.asynchronous
+    @tornado.gen.coroutine
     def get(self):
         # time.sleep(10)
         mac_address=self.get_argument('mac_address')
@@ -77,16 +88,34 @@ class history_query_handler(base_handler):
         end_time = time.mktime(time.strptime(end_time, '%Y-%m-%d %H:%M:%S'))
         # print start_time
         # print end_time
+        # response = yield tasks_for_syn.db_query(mac_address, position, type, start_time, end_time)
         if type == '':
-            tasks.db_query.apply_async(args=[mac_address, position, type, start_time, end_time], callback=self.on_success_all)
+            # tasks.db_query.apply_async(args=[mac_address, position, type, start_time, end_time], callback=self.on_success_all)
+            response = yield tasks_for_syn.db_query_all(mac_address, position, type, start_time, end_time)
+            self.on_success_all(response)
         else:
-            tasks.db_query.apply_async(args=[mac_address, position, type, start_time, end_time], callback=self.on_success_one)
+            # tasks.db_query.apply_async(args=[mac_address, position, type, start_time, end_time], callback=self.on_success_one)
+            response = yield tasks_for_syn.db_query(mac_address, position, type, start_time, end_time)
+            self.on_success_all(response)
+    # def on_success_one(self, resp):
+    #     #print resp.result
+    #     res = []
+    #     if resp.result:
+    #         # print resp.result
+    #         for d,v in resp.result:
+    #             res.append([d*1000,v])
+    #         # print res
+    #         self.write(json.dumps(res))
+    #     else:
+    #         # print 'here'
+    #         self.write('')
+    #     self.finish()
     def on_success_one(self, resp):
-        #print resp.result
+        #print resp
         res = []
-        if resp.result:
-            # print resp.result
-            for d,v in resp.result:
+        if resp:
+            # print resp
+            for d,v in resp:
                 res.append([d*1000,v])
             # print res
             self.write(json.dumps(res))
@@ -95,14 +124,38 @@ class history_query_handler(base_handler):
             self.write('')
         self.finish()
 
+    # def on_success_all(self, resp):
+    #     res=[[],[]]
+    #     # print resp.result
+    #     if resp.result:
+    #         if resp.result[0] != '':
+    #             for d,v in resp.result[0]:
+    #                 res[0].append([d*1000,v])
+    #         else:
+    #            res[0]=''
+    #         if resp.result[1] != '':
+    #             for d,v in resp.result[1]:
+    #                 res[1].append([d*1000,v])
+    #         else:
+    #            res[1]=''
+    #         self.write(json.dumps(res))
+    #     else:
+    #         self.write('')
+    #     self.finish()
     def on_success_all(self, resp):
-        res=[[],[]]
-        if resp.result:
-            for d,v in resp.result[0]:
-                res[0].append([d*1000,v])
-            for d,v in resp.result[1]:
-                res[1].append([d*1000,v])
+        res=[]
+        # print resp
+        if resp:
+            for i in xrange(len(resp)):
+                res.append([])
+                if resp[i] != '':
+                    for d,v in resp[i]:
+                        res[i].append([d*1000,v])
+                else:
+                   res[i]=''
             self.write(json.dumps(res))
         else:
             self.write('')
         self.finish()
+    def on_connection_close(self):
+        print 'history_query on_connection_close method called'

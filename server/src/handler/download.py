@@ -13,7 +13,7 @@ import tasks
 import time
 
 
-tcelery.setup_nonblocking_producer()
+# tcelery.setup_nonblocking_producer()
 
 class download_handler(base_handler):
     @tornado.web.authenticated
@@ -33,17 +33,18 @@ class download_handler(base_handler):
             end_time = time.mktime(time.strptime(end_time, '%Y-%m-%d %H:%M:%S'))
             return self.get_download_file(mac_address_list, start_time, end_time)
     def get_download_page(self):
-        return self.render('download.html',
-                           page_name = 'download',
-                           )
+        self.render('download.html',
+                    page_name = 'download',
+                   )
 
     def get_download_file(self, mac_address_list, start_time, end_time):
-        # time.sleep(10)
-        # tasks.data_zip.apply_async(args=[mac_address_list, start_time, end_time], callback=self.on_success)
-        tasks.data_zip_by_category.apply_async(args=[mac_address_list, start_time, end_time], callback=self.on_success)
+        # tasks.data_zip_by_category.apply_async(args=[mac_address_list, start_time, end_time], callback=self.on_success)
+        self.write('')
+        return self.finish()  
 
     def on_success(self, resp):
         # print '----------------',resp.result
         self.write(resp.result)
         self.finish()
-
+    def on_connection_close(self):
+        print 'download on_connection_close method called'

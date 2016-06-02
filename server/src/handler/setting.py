@@ -40,7 +40,6 @@ class setting_handler(base_handler):
     def interval_setting(self):
         contents = self.get_argument('setting_content', '')
         j_contents = json.loads(contents)
-        print j_contents
         for j_c in j_contents:
             mac_address = j_c['mac_address'].strip()
 	    # print mac_address
@@ -64,6 +63,7 @@ class setting_basicModule(tornado.web.UIModule):
 
     # def embedded_javascript(self):
     #     basic_config_dict = {}
+    # def on_su
     #     basic_config_dict['device_name'] = ''
     #     basic_config_dict['device_id'] = ''
     #     basic_config_dict['device_type'] = ''
@@ -73,4 +73,3 @@ class setting_basicModule(tornado.web.UIModule):
     #     return self.render_string("setting_basic.js", device_name=basic_config_dict['device_name'],
     #                               device_id=basic_config_dict['device_id'], device_type=basic_config_dict['device_type'],
     #                               channel_number=basic_config_dict['channel_number'], storage=basic_config_dict['storage'], )
-
