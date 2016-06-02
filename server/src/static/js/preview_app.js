@@ -3,11 +3,11 @@
  */
 var sign
 function on_selecteditem_change(){
-    render_chart([[],[]])
+    render_chart([[],[],[],[],[],[]], '目标浓度')
     var date = new Date()
     var end_time = date.pattern("yyyy-MM-dd hh:mm")
     var date_milliseconds = date.getTime()
-    date_milliseconds -= 1000*60*19
+    date_milliseconds -= 1000*60*59
     date = new Date(date_milliseconds)
     var start_time = date.pattern("yyyy-MM-dd hh:mm")
     //var chart = $('#container').highcharts()
@@ -25,8 +25,9 @@ function on_selecteditem_change(){
         //chart.setTitle(title)
         loading_begin('数据准备中')
         //alert('--------test--------')
-        $.ajax({
+        var historyDataRequest=$.ajax({
                 url:'history/query',
+                timeout:10000,
                 type:'GET',
                 dataType:'text',
                 data:{'mac_address':$('#chamber_name').children('option:selected').attr('value').split(',')[0],
@@ -34,7 +35,7 @@ function on_selecteditem_change(){
                       'type':'',
                       'start_time':start_time,
                       'end_time':end_time
-                      },
+                },
                 success:function(data, status){
                     if(data==''){
                         //alert('所选择的时间段没有数据!')
@@ -43,11 +44,32 @@ function on_selecteditem_change(){
                     }
                     else{
                         var jdata= $.parseJSON(data)
-                        render_chart(jdata)
+                        for(var i=0,len=jdata.length;i<len;i++){
+                            if(jdata[i] == '')
+                            {
+                                jdata[i] = []
+                            }
+                        }
+                        if($('#chamber_name').children('option:selected').attr('value').split(',')[1] == '5'){
+                            render_chart(jdata, '测量浓度5min均值')
+                        }
+                        else{
+                            render_chart(jdata, '目标浓度')
+                        }
                         loading_end()
                     }
 
                 },
+                complete:function(XMLHttpRequest,status){
+                    if(status=='timeout'){
+                        historyDataRequest.abort();
+                        loading_end();
+                    }
+                    else{
+                        loading_end();
+                    }
+                }
+                
             })
         sign=setInterval(
             function(){
@@ -61,40 +83,125 @@ function on_selecteditem_change(){
                          },
                     success:function(data, status){
                         var data = $.parseJSON(data)
+                        if(data == ''){
+                            data = ['', '']
+                        }
                         var detail_data = data[0]
                         var plot_data = data[1]
-                        if(plot_data != ''){
-                            //var plot_data = $.parseJSON(data)
-                            var chart = $('#container').highcharts()
-                            var series = chart.series;
-                            serie_1_len = series[0].data.length
-                            serie_2_len = series[1].data.length
-                            if(serie_1_len != 0){
-                                if(series[0].data[serie_1_len-1]['x'] != plot_data[0][0]){
-                                    if(plot_data[0][0]-series[0].data[0]['x']>=20*60*1000){
-                                        series[0].addPoint(plot_data[0],true,true)
-                                    }
-                                    else{
-                                        series[0].addPoint(plot_data[0],true,false)
-                                    }
-                                }
-                            }
-                            else{
-                                series[0].addPoint(plot_data[0],true,false)
-                            }
-                            if(serie_2_len != 0){
-                                if(series[1].data[serie_2_len-1]['x'] != plot_data[1][0]){
-                                    if(plot_data[1][0]-series[1].data[0]['x']>=20*60*1000){
-                                        series[1].addPoint(plot_data[1],true,true)
-                                    }
-                                    else{
-                                        series[1].addPoint(plot_data[1],true,false)
+                        if(plot_data != '')
+                        {
+                            var chart = $('#container_carbon').highcharts()
+                            var series = chart.series
+                            var serie_1_len = series[0].data.length
+                            var serie_2_len = series[1].data.length
+                            if(plot_data[0][0]!=''&&plot_data[0][1]!='')
+                            { 
+                                if(serie_1_len != 0){
+                                    if(series[0].data[serie_1_len-1]['x'] != plot_data[0][0]){
+                                        if(plot_data[0][0]-series[0].data[0]['x']>=60*60*1000){
+                                            series[0].addPoint(plot_data[0],true,true)
+                                        }
+                                        else{
+                                            series[0].addPoint(plot_data[0],true,false)
+                                        }
                                     }
                                 }
+                                else{
+                                    series[0].addPoint(plot_data[0],true,false)
+                                }
+                            }
+                            if(plot_data[1][0]!=''&&plot_data[1][1]!='')
+                            {
+                                if(serie_2_len != 0){
+                                    if(series[1].data[serie_2_len-1]['x'] != plot_data[1][0]){
+                                        if(plot_data[1][0]-series[1].data[0]['x']>=60*60*1000){
+                                            series[1].addPoint(plot_data[1],true,true)
+                                        }
+                                        else{
+                                            series[1].addPoint(plot_data[1],true,false)
+                                        }
+                                    }
 
+                                }
+                                else{
+                                    series[1].addPoint(plot_data[1],true,false)
+                                }
                             }
-                            else{
-                                series[1].addPoint(plot_data[1],true,false)
+
+                            chart = $('#container_humidity').highcharts()
+                            series = chart.series
+                            var serie_3_len = series[0].data.length
+                            var serie_4_len = series[1].data.length
+                            if(plot_data[2][0]!=''&&plot_data[2][1]!='')
+                            {
+                                if(serie_3_len != 0){
+                                    if(series[0].data[serie_3_len-1]['x'] != plot_data[2][0]){
+                                        if(plot_data[2][0]-series[0].data[0]['x']>=60*60*1000){
+                                            series[0].addPoint(plot_data[2],true,true)
+                                        }
+                                        else{
+                                            series[0].addPoint(plot_data[2],true,false)
+                                        }
+                                    }
+                                }
+                                else{
+                                    series[0].addPoint(plot_data[2],true,false)
+                                }
+                            }
+                            if(plot_data[3][0]!=''&&plot_data[3][1]!='')
+                            {
+                                if(serie_4_len != 0){
+                                    if(series[1].data[serie_4_len-1]['x'] != plot_data[3][0]){
+                                        if(plot_data[3][0]-series[1].data[0]['x']>=60*60*1000){
+                                            series[1].addPoint(plot_data[3],true,true)
+                                        }
+                                        else{
+                                            series[1].addPoint(plot_data[3],true,false)
+                                        }
+                                    }
+
+                                }
+                                else{
+                                    series[1].addPoint(plot_data[3],true,false)
+                                }
+                            }
+
+                            chart = $('#container_temperature').highcharts()
+                            series = chart.series
+                            var serie_5_len = series[0].data.length
+                            var serie_6_len = series[1].data.length
+                            if(plot_data[4][0]!=''&&plot_data[4][1]!='')
+                            {
+                                if(serie_5_len != 0){
+                                    if(series[0].data[serie_5_len-1]['x'] != plot_data[4][0]){
+                                        if(plot_data[4][0]-series[0].data[0]['x']>=60*60*1000){
+                                            series[0].addPoint(plot_data[4],true,true)
+                                        }
+                                        else{
+                                            series[0].addPoint(plot_data[4],true,false)
+                                        }
+                                    }
+                                }
+                                else{
+                                    series[0].addPoint(plot_data[4],true,false)
+                                }
+                            }
+                            if(plot_data[5][0]!=''&&plot_data[5][1]!='')
+                            {
+                                if(serie_6_len != 0){
+                                    if(series[1].data[serie_6_len-1]['x'] != plot_data[5][0]){
+                                        if(plot_data[5][0]-series[1].data[0]['x']>=60*60*1000){
+                                            series[1].addPoint(plot_data[5],true,true)
+                                        }
+                                        else{
+                                            series[1].addPoint(plot_data[5],true,false)
+                                        }
+                                    }
+
+                                }
+                                else{
+                                    series[1].addPoint(plot_data[5],true,false)
+                                }
                             }
                         }
                         if(detail_data != ''){
@@ -168,31 +275,19 @@ function loading_end(){
 
 
 
-function render_chart(datas){
+function render_chart(datas, title){
     Highcharts.setOptions({
             global: {
                 useUTC: false
             }
         });
 
-        $('#container').highcharts({
+        $('#container_carbon').highcharts({
             chart: {
 
                 type: 'spline',                      //曲线样式
                 animation: Highcharts.svg, // don't animate in old IE
                 marginRight: 10,
-                //events: {
-                //    load: function () {
-                //
-                //        // set up the updating of the chart each second
-                //        var series = this.series[0];
-                //        setInterval(function () {                            //setInterval定时器
-                //            var x = (new Date()).getTime(), // current time
-                //                y = Math.random();
-                //            series.addPoint([x, y], true, true);
-                //        }, 1000);
-                //    }
-                //}
             },
             title:{
                 text:'CO2浓度'
@@ -200,7 +295,7 @@ function render_chart(datas){
 
             xAxis: {
                 type: 'datetime',
-                minRange:20*60*1000
+                minRange:60*60*1000
                 //minRange:60*1000
 
             },
@@ -232,41 +327,123 @@ function render_chart(datas){
             },
             series: [{
                     name: '测量浓度',
-                    //data: (function () {
-                    //    // generate an array of random data
-                    //    var data = [],
-                    //        time = (new Date()).getTime(),
-                    //        i;
-                    //
-                    //    for (i = -19; i <= 0; i += 1) {
-                    //        data.push({
-                    //            x: time + i * 1000,
-                    //            y: Math.random()
-                    //        });
-                    //    }
-                    //    return data;
-                    //}())
                     data:datas[0]
                 },
                 {
-                    name: '目标浓度',
-                    //data: (function () {
-                    //    // generate an array of random data
-                    //    var data = [],
-                    //        time = (new Date()).getTime(),
-                    //        i;
-                    //
-                    //    for (i = -19; i <= 0; i += 1) {
-                    //        data.push({
-                    //            x: time + i * 1000,
-                    //            y: Math.random()
-                    //        });
-                    //    }
-                    //    return data;
-                    //}())
+                    name: title,
                     data:datas[1]
                 }]
         })
+
+
+        $('#container_humidity').highcharts({
+            chart: {
+
+                type: 'spline',                      //曲线样式
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+            },
+            title:{
+                text:'湿度'
+            },
+
+            xAxis: {
+                type: 'datetime',
+                minRange:60*60*1000
+                //minRange:60*1000
+
+            },
+            yAxis: {
+                title: {
+                    text: '%'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color:'blue'
+                    //color: '#808080'
+                }]
+            },
+            tooltip: {
+                backgroundColor:'#fff',
+                borderColor:'black',
+                formatter: function () {        //数据提示框中单个点的格式化函数
+                    return '<b>' + this.series.name+ '</b><br/>' +
+                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                        Highcharts.numberFormat(this.y, 3);   //小数后几位
+                }
+            },
+            legend: {
+                enabled: true
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                    name: '空气湿度',
+                    data:datas[2]
+                },
+                {
+                    name: '土壤湿度',
+                    data:datas[3]
+                }]
+        })
+
+
+        $('#container_temperature').highcharts({
+            chart: {
+
+                type: 'spline',                      //曲线样式
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+            },
+            title:{
+                text:'温度'
+            },
+
+            xAxis: {
+                type: 'datetime',
+                minRange:60*60*1000
+                //minRange:60*1000
+
+            },
+            yAxis: {
+                title: {
+                    text: '°C'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color:'blue'
+                    //color: '#808080'
+                }]
+            },
+            tooltip: {
+                backgroundColor:'#fff',
+                borderColor:'black',
+                formatter: function () {        //数据提示框中单个点的格式化函数
+                    return '<b>' + this.series.name+ '</b><br/>' +
+                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                        Highcharts.numberFormat(this.y, 3);   //小数后几位
+                }
+            },
+            legend: {
+                enabled: true
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                    name: '空气温度',
+                    data:datas[4]
+                },
+                {
+                    name: '土壤温度',
+                    data:datas[5]
+                }]
+        })
+
+
 }
 
 Date.prototype.pattern=function(fmt) {

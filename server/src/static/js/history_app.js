@@ -91,21 +91,21 @@ function loading_end(){
 
 
 
-function render_chart(title, data){
+function render_chart(title1, data1, title2, data2){
     $('#container').highcharts({                   //图表展示容器，与div的id保持一致
         chart: {
             type: 'line',                         //指定图表的类型，默认是折线图（line）
             zoomType: 'x',
         },
         title:{
-            text: title
+            text: '历史数据'
         },
         xAxis: {
             type: 'datetime',
             },
         yAxis: {
             title: {
-                text: title                  //指定y轴的标题
+                text: ''                  //指定y轴的标题
             },
             plotLines: [{
                 value: 0,
@@ -127,15 +127,19 @@ function render_chart(title, data){
                 enabled: true
             },
         series: [{                                 //指定数据列
-            name: title,                          //数据列名
-            data: data                              //数据
+            name: title1,                          //数据列名
+            data: data1                              //数据
+        },
+        {
+            name: title2,
+            data: data2
         }]
     });
 }
 
 
 $(function(){
-    render_chart("",[])
+    render_chart('',[],'',[])
         });
 
 
@@ -151,15 +155,30 @@ function selected_history(){
         alert('请输入有效结束时间')
         return
     }
+    var start_str = (start_time_str+":00").replace(/-/g,"/")
+    var start_date = new Date(start_str)
+    var end_str = (end_time_str+":00").replace(/-/g,"/")
+    var end_date = new Date(end_str)
+    if(end_date-start_date>86400000){
+//        alert(end_date-start_date)
+        alert('所选时间间隔大于24小时!')
+        return
+    }
+    var count = Math.floor((end_date-start_date)/2880000)
     //alert($('#data_name').children('option:selected').attr('value'))
     //var start_time = new Date(Date.parse(start_time_str.replace(/-/g, "/")));
     //var end_time = new Date(Date.parse(end_time_str.replace(/-/g, "/")));
     //var interval = (end_time.getTime()-start_time.getTime());
-    var data_name = $('#data_name').children('option:selected').text();
+    var data_name1 = $('#data_name').children('option:selected').text();
+    var data_name2 = ''
+    if(data_name1 == '测量浓度'){
+        data_name2 = '目标浓度'
+    }
     loading_begin('数据准备中')
     //alert('--------test--------')
-    $.ajax({
+    var historyDataRequest=$.ajax({
         url:'history/query',
+        timeout:30000,
         type:'GET',
         dataType:'text',
         data:{'mac_address':$('#chamber_name').children('option:selected').attr('value').split(',')[0],
@@ -174,13 +193,57 @@ function selected_history(){
                 loading_end()
                 return
             }
+//            if(data=='N'){
+//                alert('所选时间间隔大于24小时!')
+//                loading_end()
+//                return
+//            }
             else{
                 var jdata= $.parseJSON(data)
-                render_chart(data_name, jdata)
-                loading_end()
+                if(jdata[0] == '' && jdata[1] == ''){
+                    alert('所选择的时间段没有数据!')
+                    loading_end()
+                    return
+                }
+                else{
+                    var data1 = new Array()
+                    var data2 = new Array()
+                    if(jdata[0] == ''){
+//                        jdata[0] = new Array()
+                    }
+                    else{
+                        for (var i=0;i<jdata[0].length;i++){
+                            if(i%count==0){
+                                data1.push(jdata[0][i])
+                            }                 
+                        }
+                    }
+                    if(jdata[1] == ''){
+//                        jdata[1] = new Array()
+                        data_name2 = ''
+                    }
+                    else{
+                        for (var i=0;i<jdata[1].length;i++){
+                            if(i%count==0){
+                                data2.push(jdata[1][i])
+                            }
+                        }
+                    }
+                    render_chart(data_name1, data1, data_name2, data2)
+                    loading_end()
+                }
             }
 
         },
+        complete:function(XMLHttpRequest,status){
+            if(status=='timeout'){
+                historyDataRequest.abort();
+                loading_end();    
+            }
+            else{
+                loading_end();
+            }
+        }
     })
 }
 
