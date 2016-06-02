@@ -52,17 +52,32 @@ import collections
 short_name_to_english_name=collections.OrderedDict()
 short_name_to_english_name['ah']='air_humidity'
 short_name_to_english_name['at']='air_temperature'
+short_name_to_english_name['cc']='calibrate_concentration'
 short_name_to_english_name['mc']='measured_concentration'
+short_name_to_english_name['mcm']='measured_concentration_avg_30m'
+short_name_to_english_name['mcs']='measured_concentration_avg_20s'
 short_name_to_english_name['sh']='soil_humidity'
 short_name_to_english_name['st']='soil_temperature'
 short_name_to_english_name['tc']='target_concentration'
+short_name_to_english_name['od']='object_diff'
+short_name_to_english_name['act']='action_time'
 short_name_to_chinese_name=collections.OrderedDict()
 short_name_to_chinese_name['ah']='空气湿度'
 short_name_to_chinese_name['at']='空气温度'
+short_name_to_chinese_name['cc']='传感器校准值'
 short_name_to_chinese_name['mc']='测量浓度'
+short_name_to_chinese_name['mcm']='测量浓度5min均值'
+short_name_to_chinese_name['mcs']='测量浓度20s均值'
 short_name_to_chinese_name['sh']='土壤湿度'
 short_name_to_chinese_name['st']='土壤温度'
 short_name_to_chinese_name['tc']='目标浓度'
+short_name_to_chinese_name['od']='目标差值'
+short_name_to_chinese_name['act']='通气时间'
 
-# short_name_to_english_name = {'ah':'air_humidity','at':'air_temperature','mc':'measured_concentration','sh':'soil_humidity','st':'soil_temperature','tc':'target_concentration'}
-# short_name_to_chinese_name = {'ah':'空气湿度','at':'空气温度','mc':'测量浓度','sh':'土壤湿度','st':'土壤温度','tc':'目标浓度'}
+data_type_enum=['air_temperature', 'air_humidity', 'soil_temperature', 'soil_humidity', 'measured_concentration', 'target_concentration', 'measured_concentration_avg_30m', 'measured_concentration_avg_20s', 'calibrate_concentration', 'object_diff', 'action_time']
+
+db_query_all_list_if_position_is_five=['measured_concentration_avg_20s','measured_concentration_avg_30m','air_humidity','soil_humidity','air_temperature','soil_temperature','object_diff','action_time']
+
+db_query_all_list_if_position_not_five=['measured_concentration_avg_20s','target_concentration','air_humidity','soil_humidity','air_temperature','soil_temperature','object_diff','action_time']
+
+redis_query_type_list=[{'air_temperature':'空气温度'},{'air_humidity':'空气湿度'},{'soil_temperature':'土壤温度'},{'soil_humidity':'土壤湿度'},{'target_concentration':'目标浓度'},{'measured_concentration_avg_30m':'测量浓度5min均值'},{'measured_concentration_avg_20s':'测量浓度'},{'calibrate_concentration':'传感器校准值'},{'object_diff':'目标差值'},{'action_time':'通气时间'}]
