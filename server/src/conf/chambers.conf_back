@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<chambers>
-    <chamber>
-        <data_contents>
-            <data_content key="measure_concentration" name="test"/>
-        </data_contents>
-    </chamber>
-</chambers>
