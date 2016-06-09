@@ -3,12 +3,21 @@ __author__ = 'guoxiao'
 import uuid, md5
 import threading, time
 import struct
+import socket,struct, fcntl
+import redis
 
+
+def get_ip_address(ifname): 
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+    return socket.inet_ntoa(fcntl.ioctl( 
+        s.fileno(), 
+        0x8915,  # SIOCGIFADDR 
+        struct.pack('256s', ifname[:15]) 
+    )[20:24]) 
 
 def get_mac_address():
-    mac = uuid.UUID(int = uuid.getnode()).hex[-12:0]
-    return "".join([mac[e:e+2] for e in range(0,11,2)])
-
+    mac = uuid.UUID(int = uuid.getnode()).hex[-12:]
+    return mac
 
 def get_md5(raw_str):
     mdtool = md5.new()
@@ -64,12 +73,23 @@ class CountDownExec(CountDownTimer):
     def run(self):
         CountDownTimer.run(self)
         self.action(self.args)
-        TProcess = CountDownExec(self.seconds, self.action, self.args)
+        # TProcess = CountDownExec(self.seconds, self.action, self.args)
+
+        r=redis.Redis()
+        duration = r.get('duration')
+        if duration:
+            duration = int(duration)
+        else:
+            duration = 10
+        TProcess = CountDownExec(duration, self.action, self.args)
+       
         TProcess.start()
 
     def set_duration(self, seconds):
         self.seconds = seconds
         self.runTime = seconds
+        TProcess = CountDownExec(self.seconds, self.action, self.args)
+        TProcess.start()
 
 
 def bytes_to_int(buf, offset):

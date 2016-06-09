@@ -11,9 +11,10 @@ class DataPool:
     def __init__(self, max_size):
         self.queue = Queue.Queue(max_size)
         self.max_size = max_size
+        self.g_counts_reboot = 0
 
     @staticmethod
-    def get_instance(max_size = 100):
+    def get_instance(max_size = 20):
         if(DataPool.instance == None):
             DataPool.mutex.acquire()
             if(DataPool.instance == None):
