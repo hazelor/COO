@@ -1,12 +1,11 @@
 __author__ = 'guoxiao'
 import paho.mqtt.client as mqtt
-from commUtils import get_mac_address
+from commUtils import get_mac_address,CountDownTimer
 from confUtils import *
 from macros import *
 from serialUtils import serialController
 from updateUtils import updateController
 import json
-
 
 def on_connect(client, userdata, flags, rc):
     print "connected with result code:"+str(rc)

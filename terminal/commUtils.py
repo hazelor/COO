@@ -5,6 +5,7 @@ import threading, time
 import struct
 import socket,struct, fcntl
 import redis
+import os
 
 
 def get_ip_address(ifname): 
@@ -16,7 +17,11 @@ def get_ip_address(ifname):
     )[20:24]) 
 
 def get_mac_address():
-    mac = uuid.UUID(int = uuid.getnode()).hex[-12:]
+    for line in os.popen("/sbin/ifconfig"):
+        if 'eth0' in line:
+            mac = line.split()[4]
+            mac = mac.replace(':','')
+            break
     return mac
 
 def get_md5(raw_str):
@@ -33,6 +38,8 @@ class Timer(threading.Thread):
         self.runTime = seconds
         threading.Thread.__init__(self)
 
+    def set_duration(self, seconds):
+        self.runTime = seconds
     def run(self):
         time.sleep(self.runTime)
 
@@ -73,15 +80,8 @@ class CountDownExec(CountDownTimer):
     def run(self):
         CountDownTimer.run(self)
         self.action(self.args)
-        # TProcess = CountDownExec(self.seconds, self.action, self.args)
 
-        r=redis.Redis()
-        duration = r.get('duration')
-        if duration:
-            duration = int(duration)
-        else:
-            duration = 10
-        TProcess = CountDownExec(duration, self.action, self.args)
+        TProcess = CountDownExec(self.seconds, self.action, self.args)
        
         TProcess.start()
 
@@ -98,4 +98,7 @@ def bytes_to_int(buf, offset):
 
 def bytes_to_float(buf, offset):
     return struct.unpack_from(">f", buf, offset)[0]
+
+def float_to_bytes(value):
+    return struct.pack(">f",value)
 
